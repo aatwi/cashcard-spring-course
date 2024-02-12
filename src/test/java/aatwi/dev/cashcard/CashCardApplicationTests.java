@@ -206,6 +206,5 @@ class CashCardApplicationTests {
                 .exchange("/cashcards/102", HttpMethod.PUT, request, Void.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
-
     }
 }

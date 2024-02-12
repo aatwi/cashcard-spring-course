@@ -11,7 +11,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.net.URI;
 import java.security.Principal;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/cashcards")
@@ -25,8 +24,8 @@ public class CashCardController {
 
     @GetMapping("/{requestedId}")
     private ResponseEntity<CashCard> findById(@PathVariable Long requestedId, Principal principal) {
-        Optional<CashCard> cashCardOptional = Optional.ofNullable(repository.findByIdAndOwner(requestedId, principal.getName()));
-        return cashCardOptional.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        CashCard cashCard = findCashCard(requestedId, principal);
+        return cashCard != null ? ResponseEntity.ok(cashCard) : ResponseEntity.notFound().build();
     }
 
     @PostMapping
@@ -54,12 +53,16 @@ public class CashCardController {
 
     @PutMapping("/{requestedId}")
     private ResponseEntity<Void> putCashCard(@PathVariable Long requestedId, @RequestBody CashCard cashCardUpdate, Principal principal) {
-        CashCard foundCashCard = repository.findByIdAndOwner(requestedId, principal.getName());
-        if(foundCashCard != null) {
+        CashCard foundCashCard = findCashCard(requestedId, principal);
+        if (foundCashCard != null) {
             CashCard updatedCashCard = new CashCard(foundCashCard.id(), cashCardUpdate.amount(), foundCashCard.owner());
             repository.save(updatedCashCard);
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.notFound().build();
+    }
+
+    private CashCard findCashCard(Long requestedId, Principal principal) {
+        return repository.findByIdAndOwner(requestedId, principal.getName());
     }
 }
