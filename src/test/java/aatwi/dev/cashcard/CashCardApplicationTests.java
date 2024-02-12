@@ -15,7 +15,6 @@ import org.springframework.test.annotation.DirtiesContext;
 
 import java.net.URI;
 
-import static org.assertj.core.api.Assertions.as;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -185,5 +184,28 @@ class CashCardApplicationTests {
         Double amount = documentContext.read("$.amount");
         assertThat(id).isEqualTo(99);
         assertThat(amount).isEqualTo(19.99);
+    }
+
+    @Test
+    void itShouldNotUpdateACashCardThatDoesNotExist() {
+        CashCard unKnownCashCard = new CashCard(null, 19.99, null);
+        HttpEntity<CashCard> request = new HttpEntity<>(unKnownCashCard);
+        ResponseEntity<Void> response = restTemplate
+                .withBasicAuth("sarah1", "abc123")
+                .exchange("/cashcards/99999", HttpMethod.PUT, request, Void.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+    }
+
+    @Test
+    void itShouldNotUpdateACashCardThatIsOwnedBySomeoneElse() {
+        CashCard unKnownCashCard = new CashCard(null, 333.33, null);
+        HttpEntity<CashCard> request = new HttpEntity<>(unKnownCashCard);
+        ResponseEntity<Void> response = restTemplate
+                .withBasicAuth("sarah1", "abc123")
+                .exchange("/cashcards/102", HttpMethod.PUT, request, Void.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+
     }
 }
