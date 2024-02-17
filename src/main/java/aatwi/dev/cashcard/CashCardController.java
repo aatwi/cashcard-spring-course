@@ -28,6 +28,11 @@ public class CashCardController {
         return cashCard != null ? ResponseEntity.ok(cashCard) : ResponseEntity.notFound().build();
     }
 
+    @PostMapping("/hello")
+    private ResponseEntity<Void> test() {
+        return ResponseEntity.ok().build();
+    }
+
     @PostMapping
     private ResponseEntity<Void> createCashCard(@RequestBody CashCard newCard, UriComponentsBuilder ucb, Principal principal) {
         CashCard cashCardWithOwner = new CashCard(null, newCard.amount(), principal.getName());
@@ -57,6 +62,15 @@ public class CashCardController {
         if (foundCashCard != null) {
             CashCard updatedCashCard = new CashCard(foundCashCard.id(), cashCardUpdate.amount(), foundCashCard.owner());
             repository.save(updatedCashCard);
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+    @DeleteMapping("/{id}")
+    private ResponseEntity<Void> deleteCashCard(@PathVariable Long id, Principal principal) {
+        if (repository.existsByIdAndOwner(id, principal.getName())) {
+            repository.deleteById(id);
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.notFound().build();
