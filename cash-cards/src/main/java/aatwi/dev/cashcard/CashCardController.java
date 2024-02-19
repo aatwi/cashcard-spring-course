@@ -28,11 +28,6 @@ public class CashCardController {
         return cashCard != null ? ResponseEntity.ok(cashCard) : ResponseEntity.notFound().build();
     }
 
-    @PostMapping("/hello")
-    private ResponseEntity<Void> test() {
-        return ResponseEntity.ok().build();
-    }
-
     @PostMapping
     private ResponseEntity<Void> createCashCard(@RequestBody CashCard newCard, UriComponentsBuilder ucb, Principal principal) {
         CashCard cashCardWithOwner = new CashCard(null, newCard.amount(), principal.getName());
