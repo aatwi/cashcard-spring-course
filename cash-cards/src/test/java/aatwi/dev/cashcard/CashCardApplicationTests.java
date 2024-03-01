@@ -36,16 +36,6 @@ class CashCardApplicationTests {
         assertEquals(expected, cashCard);
     }
 
-    private CashCard parseCashCardsFrom(String responseBody) throws JsonProcessingException {
-        ObjectMapper mapper = new ObjectMapper();
-        return mapper.readValue(responseBody, CashCard.class);
-    }
-
-    private List<CashCard> parseCashCardsListFrom(String responseBody) throws JsonProcessingException {
-        ObjectMapper mapper = new ObjectMapper();
-        return Arrays.asList(mapper.readValue(responseBody, CashCard[].class));
-    }
-
     @Test
     void shouldNotReturnACashCardWithAnUnknownId() {
         ResponseEntity<String> response = restTemplate
@@ -91,8 +81,7 @@ class CashCardApplicationTests {
         List<CashCard> expected = Arrays.asList(
                 new CashCard(99L, 123.45, "sarah1"),
                 new CashCard(100L, 1.0, "sarah1"),
-                new CashCard(101L, 150.0, "sarah1")
-        );
+                new CashCard(101L, 150.0, "sarah1"));
         assertTrue(expected.containsAll(actual));
     }
 
@@ -132,8 +121,7 @@ class CashCardApplicationTests {
         List<CashCard> expected = Arrays.asList(
                 new CashCard(99L, 123.45, "sarah1"),
                 new CashCard(100L, 1.0, "sarah1"),
-                new CashCard(101L, 150.0, "sarah1")
-        );
+                new CashCard(101L, 150.0, "sarah1"));
         assertTrue(expected.containsAll(actual));
     }
 
@@ -249,5 +237,15 @@ class CashCardApplicationTests {
                 .getForEntity("/cashcards/102", String.class);
 
         assertEquals(HttpStatus.OK, getResponse.getStatusCode());
+    }
+
+    private CashCard parseCashCardsFrom(String responseBody) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.readValue(responseBody, CashCard.class);
+    }
+
+    private List<CashCard> parseCashCardsListFrom(String responseBody) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        return Arrays.asList(mapper.readValue(responseBody, CashCard[].class));
     }
 }
